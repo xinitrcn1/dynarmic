@@ -13,7 +13,8 @@
 
 #include <mcl/hash/xmrx.hpp>
 #include "dynarmic/common/common_types.h"
-#include <ankerl/unordered_dense.h>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "dynarmic/backend/exception_handler.h"
 #include "dynarmic/ir/location_descriptor.h"
@@ -53,7 +54,7 @@ public:
 
 private:
     ExceptionHandler& exception_handler;
-    ankerl::unordered_dense::set<DoNotFastmemMarker, DoNotFastmemMarkerHash> do_not_fastmem;
+    std::unordered_set<DoNotFastmemMarker, DoNotFastmemMarkerHash> do_not_fastmem;
 };
 
 }  // namespace Dynarmic::Backend::Arm64

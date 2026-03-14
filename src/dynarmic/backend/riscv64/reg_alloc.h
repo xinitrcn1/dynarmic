@@ -19,7 +19,8 @@
 #include "dynarmic/common/assert.h"
 #include "dynarmic/common/common_types.h"
 #include <mcl/type_traits/is_instance_of_template.hpp>
-#include <ankerl/unordered_dense.h>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "dynarmic/backend/riscv64/stack_layout.h"
 #include "dynarmic/ir/cond.h"

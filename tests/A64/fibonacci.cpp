@@ -8,7 +8,8 @@
 
 #include <array>
 #include <exception>
-#include <ankerl/unordered_dense.h>
+#include <unordered_map>
+#include <unordered_set>
 
 #include <catch2/catch_test_macros.hpp>
 #include "dynarmic/common/common_types.h"
@@ -23,7 +24,7 @@ namespace {
 class MyEnvironment final : public A64::UserCallbacks {
 public:
     u64 ticks_left = 0;
-    ankerl::unordered_dense::map<u64, u8> memory{};
+    std::unordered_map<u64, u8> memory{};
 
     u8 MemoryRead8(u64 vaddr) override {
         return memory[vaddr];

@@ -7,8 +7,8 @@
 #include <unordered_set>
 
 // TODO: Defining this crashes e v e r y t h i n g
-// #define XBYAK_STD_UNORDERED_SET ankerl::unordered_dense::set
-// #define XBYAK_STD_UNORDERED_MAP ankerl::unordered_dense::map
+// #define XBYAK_STD_UNORDERED_SET std::unordered_set
+// #define XBYAK_STD_UNORDERED_MAP std::unordered_map
 // #define XBYAK_STD_UNORDERED_MULTIMAP boost::unordered_multimap
 
 #include <xbyak/xbyak.h>

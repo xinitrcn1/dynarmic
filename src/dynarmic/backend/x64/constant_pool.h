@@ -14,7 +14,8 @@
 #include <utility>
 
 #include "dynarmic/common/common_types.h"
-#include <ankerl/unordered_dense.h>
+#include <unordered_map>
+#include <unordered_set>
 #include "dynarmic/backend/x64/xbyak.h"
 
 namespace Dynarmic::Backend::X64 {
@@ -43,7 +44,7 @@ private:
         }
     };
 
-    ankerl::unordered_dense::map<ConstantT, void*, ConstantHash> constant_info;
+    std::unordered_map<ConstantT, void*, ConstantHash> constant_info;
     std::span<ConstantT> pool;
     BlockOfCode& code;
     std::size_t insertion_point;

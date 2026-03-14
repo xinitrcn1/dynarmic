@@ -15,7 +15,8 @@
 #include <mcl/bit/bit_field.hpp>
 #include <mcl/scope_exit.hpp>
 #include "dynarmic/common/common_types.h"
-#include <ankerl/unordered_dense.h>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "dynarmic/backend/x64/block_of_code.h"
 #include "dynarmic/backend/x64/nzcv_util.h"
@@ -394,7 +395,7 @@ void EmitX64::ClearCache() {
     PerfMapClear();
 }
 
-void EmitX64::InvalidateBasicBlocks(const ankerl::unordered_dense::set<IR::LocationDescriptor>& locations) {
+void EmitX64::InvalidateBasicBlocks(const std::unordered_set<IR::LocationDescriptor>& locations) {
     code.EnableWriting();
     for (const auto& descriptor : locations) {
         if (auto const it = block_descriptors.find(descriptor); it != block_descriptors.end()) {

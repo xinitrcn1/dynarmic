@@ -13,7 +13,8 @@
 #include <set>
 #include <tuple>
 
-#include <ankerl/unordered_dense.h>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "dynarmic/backend/block_range_information.h"
 #include "dynarmic/backend/x64/a32_jitstate.h"
@@ -125,11 +126,11 @@ public:
     RegAlloc reg_alloc; //reusable reg alloc
     BlockRangeInformation<u32> block_ranges;
     std::array<FastDispatchEntry, fast_dispatch_table_size> fast_dispatch_table;
-    ankerl::unordered_dense::map<u64, FastmemPatchInfo> fastmem_patch_info;
-    ankerl::unordered_dense::map<std::tuple<bool, size_t, int, int>, void (*)()> read_fallbacks;
-    ankerl::unordered_dense::map<std::tuple<bool, size_t, int, int>, void (*)()> write_fallbacks;
-    ankerl::unordered_dense::map<std::tuple<bool, size_t, int, int>, void (*)()> exclusive_write_fallbacks;
-    ankerl::unordered_dense::set<DoNotFastmemMarker> do_not_fastmem;
+    std::unordered_map<u64, FastmemPatchInfo> fastmem_patch_info;
+    std::unordered_map<std::tuple<bool, size_t, int, int>, void (*)()> read_fallbacks;
+    std::unordered_map<std::tuple<bool, size_t, int, int>, void (*)()> write_fallbacks;
+    std::unordered_map<std::tuple<bool, size_t, int, int>, void (*)()> exclusive_write_fallbacks;
+    std::unordered_set<DoNotFastmemMarker> do_not_fastmem;
     void (*memory_read_128)() = nullptr;   // Dummy
     void (*memory_write_128)() = nullptr;  // Dummy
     const void* terminal_handler_pop_rsb_hint;

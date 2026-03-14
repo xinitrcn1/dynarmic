@@ -14,7 +14,8 @@
 #include <vector>
 
 #include "dynarmic/common/common_types.h"
-#include <ankerl/unordered_dense.h>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "dynarmic/backend/arm64/fastmem.h"
 #include "dynarmic/interface/A32/coprocessor.h"
@@ -105,8 +106,8 @@ struct EmittedBlockInfo {
     CodePtr entry_point;
     size_t size;
     std::vector<Relocation> relocations;
-    ankerl::unordered_dense::map<IR::LocationDescriptor, std::vector<BlockRelocation>> block_relocations;
-    ankerl::unordered_dense::map<std::ptrdiff_t, FastmemPatchInfo> fastmem_patch_info;
+    std::unordered_map<IR::LocationDescriptor, std::vector<BlockRelocation>> block_relocations;
+    std::unordered_map<std::ptrdiff_t, FastmemPatchInfo> fastmem_patch_info;
 };
 
 struct EmitConfig {
