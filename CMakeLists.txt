@@ -135,18 +135,15 @@ if (DYNARMIC_USE_BUNDLED_EXTERNALS)
     set(CMAKE_DISABLE_FIND_PACKAGE_fmt ON)
     set(CMAKE_DISABLE_FIND_PACKAGE_mcl ON)
     set(CMAKE_DISABLE_FIND_PACKAGE_oaknut ON)
-    set(CMAKE_DISABLE_FIND_PACKAGE_tsl-robin-map ON)
+    set(CMAKE_DISABLE_FIND_PACKAGE_unordered_dense ON)
     set(CMAKE_DISABLE_FIND_PACKAGE_xbyak ON)
     set(CMAKE_DISABLE_FIND_PACKAGE_Zydis ON)
 endif()
 
-# Ensure that robin-map `export`s
-set(TSL_ROBIN_MAP_ENABLE_INSTALL ON)
-
 find_package(Boost 1.57 REQUIRED)
 find_package(fmt 9 CONFIG)
 find_package(mcl 0.1.14 EXACT CONFIG)
-find_package(tsl-robin-map CONFIG)
+find_package(unordered_dense CONFIG)
 
 if ("arm64" IN_LIST ARCHITECTURE OR DYNARMIC_TESTS)
     find_package(oaknut 2.0.1 CONFIG)

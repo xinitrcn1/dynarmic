@@ -13,9 +13,6 @@
 [submodule "oaknut"]
 	path = externals/oaknut
 	url = https://github.com/merryhime/oaknut.git
-[submodule "robin-map"]
-	path = externals/robin-map
-	url = https://github.com/Tessil/robin-map.git
 [submodule "xbyak"]
 	path = externals/xbyak
 	url = https://github.com/herumi/xbyak.git
@@ -25,3 +22,6 @@
 [submodule "zydis"]
 	path = externals/zydis
 	url = https://github.com/zyantific/zydis.git
+[submodule "externals/unordered_dense"]
+	path = externals/unordered_dense
+	url = https://github.com/martinus/unordered_dense
