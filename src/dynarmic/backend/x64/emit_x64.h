@@ -55,7 +55,7 @@ using HalfVectorArray = std::array<T, A64FullVectorWidth::value / mcl::bitsizeof
 
 using SharedLabel = Xbyak::Label*;
 struct EmitContext {
-    EmitContext(RegAlloc& reg_alloc, IR::Block& block, boost::container::stable_vector<<Xbyak::Label>& shared_labels);
+    EmitContext(RegAlloc& reg_alloc, IR::Block& block, boost::container::stable_vector<Xbyak::Label>& shared_labels);
     virtual ~EmitContext();
     virtual FP::FPCR FPCR(bool fpcr_controlled = true) const = 0;
     virtual bool HasOptimization(OptimizationFlag flag) const = 0;
@@ -67,7 +67,7 @@ struct EmitContext {
     std::vector<std::function<void()>> deferred_emits;
     RegAlloc& reg_alloc;
     IR::Block& block;
-    boost::container::stable_vector<<Xbyak::Label>& shared_labels;
+    boost::container::stable_vector<Xbyak::Label>& shared_labels;
 };
 
 class EmitX64 {
