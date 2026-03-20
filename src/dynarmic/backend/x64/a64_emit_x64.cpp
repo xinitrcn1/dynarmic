@@ -38,7 +38,7 @@ namespace Dynarmic::Backend::X64 {
 
 using namespace Xbyak::util;
 
-A64EmitContext::A64EmitContext(const A64::UserConfig& conf, RegAlloc& reg_alloc, IR::Block& block, std::vector<Xbyak::Label>& shared_labels)
+A64EmitContext::A64EmitContext(const A64::UserConfig& conf, RegAlloc& reg_alloc, IR::Block& block, boost::container::stable_vector<<Xbyak::Label>& shared_labels)
     : EmitContext(reg_alloc, block, shared_labels)
     , conf(conf)
 {}
@@ -87,9 +87,6 @@ A64EmitX64::BlockDescriptor A64EmitX64::Emit(IR::Block& block) noexcept {
         return gprs;
     }(), any_xmm};
 
-    // up to 2 labels per insn
-    if (auto const inst_count = block.instructions.size(); inst_count > shared_labels.capacity())
-        shared_labels.reserve(inst_count * 16);
     A64EmitContext ctx{conf, reg_alloc, block, shared_labels};
 
     // Start emitting.

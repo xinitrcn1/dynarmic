@@ -33,7 +33,7 @@ namespace Dynarmic::Backend::X64 {
 
 using namespace Xbyak::util;
 
-EmitContext::EmitContext(RegAlloc& reg_alloc, IR::Block& block, std::vector<Xbyak::Label>& shared_labels)
+EmitContext::EmitContext(RegAlloc& reg_alloc, IR::Block& block, boost::container::stable_vector<<Xbyak::Label>& shared_labels)
     : reg_alloc(reg_alloc)
     , block(block)
     , shared_labels(shared_labels)

@@ -27,7 +27,7 @@
 namespace Dynarmic::Backend::X64 {
 
 struct A64EmitContext final : public EmitContext {
-    A64EmitContext(const A64::UserConfig& conf, RegAlloc& reg_alloc, IR::Block& block, std::vector<Xbyak::Label>& shared_labels);
+    A64EmitContext(const A64::UserConfig& conf, RegAlloc& reg_alloc, IR::Block& block, boost::container::stable_vector<<Xbyak::Label>& shared_labels);
 
     A64::LocationDescriptor Location() const;
     bool IsSingleStep() const;
@@ -126,7 +126,7 @@ public:
     ankerl::unordered_dense::map<std::tuple<bool, size_t, int, int>, void (*)()> write_fallbacks;
     ankerl::unordered_dense::map<std::tuple<bool, size_t, int, int>, void (*)()> exclusive_write_fallbacks;
     ankerl::unordered_dense::set<DoNotFastmemMarker> do_not_fastmem;
-    std::vector<Xbyak::Label> shared_labels;
+    boost::container::stable_vector<<Xbyak::Label> shared_labels;
     const void* terminal_handler_pop_rsb_hint = nullptr;
     const void* terminal_handler_fast_dispatch_hint = nullptr;
     FastDispatchEntry& (*fast_dispatch_table_lookup)(u64) = nullptr;
