@@ -115,7 +115,7 @@ A32EmitX64::BlockDescriptor A32EmitX64::Emit(IR::Block& block) {
 
     // up to 2 labels per insn
     if (auto const inst_count = block.instructions.size(); inst_count > shared_labels.capacity())
-        shared_labels.reserve(inst_count * 8);
+        shared_labels.reserve(inst_count * 16);
     A32EmitContext ctx{conf, reg_alloc, block, shared_labels};
 
     // Start emitting.
