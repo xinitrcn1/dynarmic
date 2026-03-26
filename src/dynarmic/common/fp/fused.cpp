@@ -8,7 +8,7 @@
 
 #include "dynarmic/common/fp/fused.h"
 
-#include <mcl/bit/bit_count.hpp>
+#include "dynarmic/mcl/bit.hpp"
 
 #include "dynarmic/common/fp/unpacked.h"
 #include "dynarmic/common/u128.h"

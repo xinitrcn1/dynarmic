@@ -11,5 +11,6 @@
 // #define XBYAK_STD_UNORDERED_MAP ankerl::unordered_dense::map
 // #define XBYAK_STD_UNORDERED_MULTIMAP boost::unordered_multimap
 
+#define XBYAK_NO_EXCEPTION 1
 #include <xbyak/xbyak.h>
 #include <xbyak/xbyak_util.h>

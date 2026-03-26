@@ -11,9 +11,8 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include "dynarmic/common/assert.h"
-#include <mcl/scope_exit.hpp>
 #include "dynarmic/common/common_types.h"
-#include <mcl/type_traits/integer_of_size.hpp>
+#include "dynarmic/mcl/integer_of_size.hpp"
 #include <boost/container/static_vector.hpp>
 
 #include "dynarmic/backend/x64/a64_jitstate.h"
@@ -92,6 +91,8 @@ A64EmitX64::BlockDescriptor A64EmitX64::Emit(IR::Block& block) noexcept {
     // Start emitting.
     code.align();
     const auto* const entrypoint = code.getCurr();
+    code.mov(code.qword[rsp + ABI_SHADOW_SPACE + offsetof(StackLayout, abi_base_pointer)], rbp);
+    code.lea(rbp, code.ptr[rsp + ABI_SHADOW_SPACE + offsetof(StackLayout, abi_base_pointer) - 8]);
 
     DEBUG_ASSERT(block.GetCondition() == IR::Cond::AL);
     typedef void (EmitX64::*EmitHandlerFn)(EmitContext& context, IR::Inst* inst);
@@ -143,16 +144,13 @@ finish_this_inst:
     }
 
     reg_alloc.AssertNoMoreUses();
-
-    if (conf.enable_cycle_counting) {
+    if (conf.enable_cycle_counting)
         EmitAddCycles(block.CycleCount());
-    }
+    code.mov(rbp, code.qword[rsp + ABI_SHADOW_SPACE + offsetof(StackLayout, abi_base_pointer)]);
     EmitTerminal(block.GetTerminal(), ctx.Location().SetSingleStepping(false), ctx.IsSingleStep());
     code.int3();
-
-    for (auto& deferred_emit : ctx.deferred_emits) {
+    for (auto& deferred_emit : ctx.deferred_emits)
         deferred_emit();
-    }
     code.int3();
 
     const size_t size = size_t(code.getCurr() - entrypoint);

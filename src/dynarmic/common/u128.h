@@ -11,8 +11,7 @@
 #include <tuple>
 #include <type_traits>
 
-#include <mcl/bit/bit_field.hpp>
-#include <mcl/bitsizeof.hpp>
+#include "dynarmic/mcl/bit.hpp"
 #include "dynarmic/common/common_types.h"
 
 namespace Dynarmic {

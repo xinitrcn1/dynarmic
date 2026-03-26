@@ -8,6 +8,7 @@
 #pragma once
 
 #include <bitset>
+#define XBYAK_NO_EXCEPTION 1
 #include <xbyak/xbyak.h>
 
 #include "dynarmic/common/assert.h"

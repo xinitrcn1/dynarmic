@@ -17,7 +17,7 @@
 #include <vector>
 
 #include <boost/container/stable_vector.hpp>
-#include <mcl/bitsizeof.hpp>
+#include "dynarmic/mcl/bit.hpp"
 #include <ankerl/unordered_dense.h>
 #include "dynarmic/backend/x64/xbyak.h"
 #include <boost/container/small_vector.hpp>
