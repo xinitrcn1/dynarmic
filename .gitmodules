@@ -7,9 +7,6 @@
 [submodule "fmt"]
 	path = externals/fmt
 	url = https://github.com/fmtlib/fmt.git
-[submodule "mcl"]
-	path = externals/mcl
-	url = https://github.com/azahar-emu/mcl.git
 [submodule "oaknut"]
 	path = externals/oaknut
 	url = https://github.com/merryhime/oaknut.git

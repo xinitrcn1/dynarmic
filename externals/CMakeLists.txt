@@ -16,7 +16,6 @@ set(BUILD_TESTING OFF)
 # to have CMake automatically recognize them.
 
 # biscuit
-
 if (NOT TARGET biscuit::biscuit)
     if ("riscv" IN_LIST ARCHITECTURE)
         add_subdirectory(biscuit)
@@ -24,7 +23,6 @@ if (NOT TARGET biscuit::biscuit)
 endif()
 
 # catch
-
 if (NOT TARGET Catch2::Catch2WithMain)
     if (DYNARMIC_TESTS)
         add_subdirectory(catch EXCLUDE_FROM_ALL)
@@ -32,22 +30,13 @@ if (NOT TARGET Catch2::Catch2WithMain)
 endif()
 
 # fmt
-
 if (NOT TARGET fmt::fmt)
     # fmtlib formatting library
     set(FMT_INSTALL ON)
     add_subdirectory(fmt)
 endif()
 
-# mcl
-
-if (NOT TARGET merry::mcl)
-    set(MCL_INSTALL ON)
-    add_subdirectory(mcl)
-endif()
-
 # oaknut
-
 if (NOT TARGET merry::oaknut)
     if ("arm64" IN_LIST ARCHITECTURE)
         add_subdirectory(oaknut)
@@ -57,13 +46,11 @@ if (NOT TARGET merry::oaknut)
 endif()
 
 # unordered_dense
-
 if (NOT TARGET unordered_dense::unordered_dense)
     add_subdirectory(unordered_dense)
 endif()
 
 # xbyak
-
 if (NOT TARGET xbyak::xbyak)
     if ("x86_64" IN_LIST ARCHITECTURE)
         add_subdirectory(xbyak)
