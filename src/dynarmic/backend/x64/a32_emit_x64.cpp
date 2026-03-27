@@ -59,7 +59,7 @@ static Xbyak::Address MJitStateExtReg(A32::ExtReg reg) {
     UNREACHABLE();
 }
 
-A32EmitContext::A32EmitContext(const A32::UserConfig& conf, RegAlloc& reg_alloc, IR::Block& block, boost::container::stable_vector<Xbyak::Label>& shared_labels)
+A32EmitContext::A32EmitContext(const A32::UserConfig& conf, RegAlloc& reg_alloc, IR::Block& block, EmitContext::SharedLabelList& shared_labels)
     : EmitContext(reg_alloc, block, shared_labels)
     , conf(conf)
 {}

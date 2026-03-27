@@ -58,8 +58,7 @@ Block::iterator Block::PrependNewInst(iterator insertion_point, Opcode opcode, s
 }
 
 void Block::Reset(LocationDescriptor location_) noexcept {
-    mcl::intrusive_list<IR::Inst> tmp = {};
-    instructions.swap(tmp);
+    instructions.root.next = instructions.root.prev = std::addressof(instructions.root);
     inlined_inst.clear();
     pooled_inst.clear();
     cond_failed.reset();
