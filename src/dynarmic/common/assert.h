@@ -8,6 +8,8 @@
 #pragma once
 
 #include <cassert>
+#include <utility>
 
 #define ASSERT(_a_) assert(_a_)
 #define DEBUG_ASSERT(_a_) assert(_a_)
+#define UNREACHABLE() std::unreachable()
