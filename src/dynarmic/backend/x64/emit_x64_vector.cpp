@@ -177,7 +177,7 @@ static void EmitTwoArgumentFallback(BlockOfCode& code, EmitContext& ctx, IR::Ins
 
 void EmitX64::EmitVectorGetElement8(EmitContext& ctx, IR::Inst* inst) {
     auto args = ctx.reg_alloc.GetArgumentInfo(inst);
-    ASSERT(args[1].IsImmediate());
+    DEBUG_ASSERT(args[1].IsImmediate());
     const u8 index = args[1].GetImmediateU8();
 
     // TODO: DefineValue directly on Argument for index == 0
@@ -201,7 +201,7 @@ void EmitX64::EmitVectorGetElement8(EmitContext& ctx, IR::Inst* inst) {
 
 void EmitX64::EmitVectorGetElement16(EmitContext& ctx, IR::Inst* inst) {
     auto args = ctx.reg_alloc.GetArgumentInfo(inst);
-    ASSERT(args[1].IsImmediate());
+    DEBUG_ASSERT(args[1].IsImmediate());
     const u8 index = args[1].GetImmediateU8();
 
     // TODO: DefineValue directly on Argument for index == 0
@@ -214,7 +214,7 @@ void EmitX64::EmitVectorGetElement16(EmitContext& ctx, IR::Inst* inst) {
 
 void EmitX64::EmitVectorGetElement32(EmitContext& ctx, IR::Inst* inst) {
     auto args = ctx.reg_alloc.GetArgumentInfo(inst);
-    ASSERT(args[1].IsImmediate());
+    DEBUG_ASSERT(args[1].IsImmediate());
     const u8 index = args[1].GetImmediateU8();
 
     // TODO: DefineValue directly on Argument for index == 0
@@ -235,7 +235,7 @@ void EmitX64::EmitVectorGetElement32(EmitContext& ctx, IR::Inst* inst) {
 
 void EmitX64::EmitVectorGetElement64(EmitContext& ctx, IR::Inst* inst) {
     auto args = ctx.reg_alloc.GetArgumentInfo(inst);
-    ASSERT(args[1].IsImmediate());
+    DEBUG_ASSERT(args[1].IsImmediate());
     const u8 index = args[1].GetImmediateU8();
 
     if (index == 0) {
@@ -263,7 +263,7 @@ void EmitX64::EmitVectorGetElement64(EmitContext& ctx, IR::Inst* inst) {
 
 void EmitX64::EmitVectorSetElement8(EmitContext& ctx, IR::Inst* inst) {
     auto args = ctx.reg_alloc.GetArgumentInfo(inst);
-    ASSERT(args[1].IsImmediate());
+    DEBUG_ASSERT(args[1].IsImmediate());
     const u8 index = args[1].GetImmediateU8();
     auto const source_vector = ctx.reg_alloc.UseScratchXmm(code, args[0]);
 
@@ -295,7 +295,7 @@ void EmitX64::EmitVectorSetElement8(EmitContext& ctx, IR::Inst* inst) {
 
 void EmitX64::EmitVectorSetElement16(EmitContext& ctx, IR::Inst* inst) {
     auto args = ctx.reg_alloc.GetArgumentInfo(inst);
-    ASSERT(args[1].IsImmediate());
+    DEBUG_ASSERT(args[1].IsImmediate());
     const u8 index = args[1].GetImmediateU8();
 
     auto const source_vector = ctx.reg_alloc.UseScratchXmm(code, args[0]);
@@ -308,7 +308,7 @@ void EmitX64::EmitVectorSetElement16(EmitContext& ctx, IR::Inst* inst) {
 
 void EmitX64::EmitVectorSetElement32(EmitContext& ctx, IR::Inst* inst) {
     auto args = ctx.reg_alloc.GetArgumentInfo(inst);
-    ASSERT(args[1].IsImmediate());
+    DEBUG_ASSERT(args[1].IsImmediate());
     const u8 index = args[1].GetImmediateU8();
     auto const source_vector = ctx.reg_alloc.UseScratchXmm(code, args[0]);
 
@@ -331,7 +331,7 @@ void EmitX64::EmitVectorSetElement32(EmitContext& ctx, IR::Inst* inst) {
 
 void EmitX64::EmitVectorSetElement64(EmitContext& ctx, IR::Inst* inst) {
     auto args = ctx.reg_alloc.GetArgumentInfo(inst);
-    ASSERT(args[1].IsImmediate());
+    DEBUG_ASSERT(args[1].IsImmediate());
     const u8 index = args[1].GetImmediateU8();
     auto const source_vector = ctx.reg_alloc.UseScratchXmm(code, args[0]);
 
@@ -717,9 +717,9 @@ void EmitX64::EmitVectorBroadcast64(EmitContext& ctx, IR::Inst* inst) {
 void EmitX64::EmitVectorBroadcastElementLower8(EmitContext& ctx, IR::Inst* inst) {
     auto args = ctx.reg_alloc.GetArgumentInfo(inst);
     auto const a = ctx.reg_alloc.UseScratchXmm(code, args[0]);
-    ASSERT(args[1].IsImmediate());
+    DEBUG_ASSERT(args[1].IsImmediate());
     const u8 index = args[1].GetImmediateU8();
-    ASSERT(index < 16);
+    DEBUG_ASSERT(index < 16);
     if (index > 0) {
         code.psrldq(a, index);
     }
@@ -741,9 +741,9 @@ void EmitX64::EmitVectorBroadcastElementLower8(EmitContext& ctx, IR::Inst* inst)
 void EmitX64::EmitVectorBroadcastElementLower16(EmitContext& ctx, IR::Inst* inst) {
     auto args = ctx.reg_alloc.GetArgumentInfo(inst);
     auto const a = ctx.reg_alloc.UseScratchXmm(code, args[0]);
-    ASSERT(args[1].IsImmediate());
+    DEBUG_ASSERT(args[1].IsImmediate());
     const u8 index = args[1].GetImmediateU8();
-    ASSERT(index < 8);
+    DEBUG_ASSERT(index < 8);
     if (index > 0) {
         code.psrldq(a, u8(index * 2));
     }
@@ -754,9 +754,9 @@ void EmitX64::EmitVectorBroadcastElementLower16(EmitContext& ctx, IR::Inst* inst
 void EmitX64::EmitVectorBroadcastElementLower32(EmitContext& ctx, IR::Inst* inst) {
     auto args = ctx.reg_alloc.GetArgumentInfo(inst);
     auto const a = ctx.reg_alloc.UseScratchXmm(code, args[0]);
-    ASSERT(args[1].IsImmediate());
+    DEBUG_ASSERT(args[1].IsImmediate());
     const u8 index = args[1].GetImmediateU8();
-    ASSERT(index < 4);
+    DEBUG_ASSERT(index < 4);
 
     if (index > 0) {
         code.psrldq(a, u8(index * 4));
@@ -770,9 +770,9 @@ void EmitX64::EmitVectorBroadcastElementLower32(EmitContext& ctx, IR::Inst* inst
 void EmitX64::EmitVectorBroadcastElement8(EmitContext& ctx, IR::Inst* inst) {
     auto args = ctx.reg_alloc.GetArgumentInfo(inst);
     auto const a = ctx.reg_alloc.UseScratchXmm(code, args[0]);
-    ASSERT(args[1].IsImmediate());
+    DEBUG_ASSERT(args[1].IsImmediate());
     const u8 index = args[1].GetImmediateU8();
-    ASSERT(index < 16);
+    DEBUG_ASSERT(index < 16);
     if (index > 0) {
         code.psrldq(a, index);
     }
@@ -794,9 +794,9 @@ void EmitX64::EmitVectorBroadcastElement8(EmitContext& ctx, IR::Inst* inst) {
 void EmitX64::EmitVectorBroadcastElement16(EmitContext& ctx, IR::Inst* inst) {
     auto args = ctx.reg_alloc.GetArgumentInfo(inst);
     auto const a = ctx.reg_alloc.UseScratchXmm(code, args[0]);
-    ASSERT(args[1].IsImmediate());
+    DEBUG_ASSERT(args[1].IsImmediate());
     const u8 index = args[1].GetImmediateU8();
-    ASSERT(index < 8);
+    DEBUG_ASSERT(index < 8);
     if (index == 0 && code.HasHostFeature(HostFeature::AVX2)) {
         code.vpbroadcastw(a, a);
     } else {
@@ -814,9 +814,9 @@ void EmitX64::EmitVectorBroadcastElement16(EmitContext& ctx, IR::Inst* inst) {
 void EmitX64::EmitVectorBroadcastElement32(EmitContext& ctx, IR::Inst* inst) {
     auto args = ctx.reg_alloc.GetArgumentInfo(inst);
     auto const a = ctx.reg_alloc.UseScratchXmm(code, args[0]);
-    ASSERT(args[1].IsImmediate());
+    DEBUG_ASSERT(args[1].IsImmediate());
     const u8 index = args[1].GetImmediateU8();
-    ASSERT(index < 4);
+    DEBUG_ASSERT(index < 4);
 
     code.pshufd(a, a, mcl::bit::replicate_element<2, u8>(index));
 
@@ -826,9 +826,9 @@ void EmitX64::EmitVectorBroadcastElement32(EmitContext& ctx, IR::Inst* inst) {
 void EmitX64::EmitVectorBroadcastElement64(EmitContext& ctx, IR::Inst* inst) {
     auto args = ctx.reg_alloc.GetArgumentInfo(inst);
     auto const a = ctx.reg_alloc.UseScratchXmm(code, args[0]);
-    ASSERT(args[1].IsImmediate());
+    DEBUG_ASSERT(args[1].IsImmediate());
     const u8 index = args[1].GetImmediateU8();
-    ASSERT(index < 2);
+    DEBUG_ASSERT(index < 2);
 
     if (code.HasHostFeature(HostFeature::AVX)) {
         code.vpermilpd(a, a, mcl::bit::replicate_element<1, u8>(index));
@@ -1314,7 +1314,7 @@ void EmitX64::EmitVectorExtract(EmitContext& ctx, IR::Inst* inst) {
     auto args = ctx.reg_alloc.GetArgumentInfo(inst);
 
     const u8 position = args[2].GetImmediateU8();
-    ASSERT(position % 8 == 0);
+    DEBUG_ASSERT(position % 8 == 0);
 
     if (position == 0) {
         ctx.reg_alloc.DefineValue(code, inst, args[0]);
@@ -1346,7 +1346,7 @@ void EmitX64::EmitVectorExtractLower(EmitContext& ctx, IR::Inst* inst) {
     auto const xmm_a = ctx.reg_alloc.UseScratchXmm(code, args[0]);
 
     const u8 position = args[2].GetImmediateU8();
-    ASSERT(position % 8 == 0);
+    DEBUG_ASSERT(position % 8 == 0);
 
     if (position != 0) {
         auto const xmm_b = ctx.reg_alloc.UseXmm(code, args[1]);
@@ -3821,7 +3821,7 @@ void EmitX64::EmitVectorRotateWholeVectorRight(EmitContext& ctx, IR::Inst* inst)
     auto const operand = ctx.reg_alloc.UseXmm(code, args[0]);
     auto const result = ctx.reg_alloc.ScratchXmm(code);
     const u8 shift_amount = args[1].GetImmediateU8();
-    ASSERT(shift_amount % 32 == 0);
+    DEBUG_ASSERT(shift_amount % 32 == 0);
     const u8 shuffle_imm = std::rotr<u8>(0b11100100, shift_amount / 32 * 2);
 
     code.pshufd(result, operand, shuffle_imm);
@@ -4914,7 +4914,7 @@ static void EmitVectorSignedSaturatedNarrowToUnsigned(size_t original_esize, Blo
         code.punpcklbw(reconstructed, xmm0);
         break;
     case 32:
-        ASSERT(code.HasHostFeature(HostFeature::SSE41));
+        DEBUG_ASSERT(code.HasHostFeature(HostFeature::SSE41));
         code.packusdw(dest, xmm0);  // SSE4.1
         code.movdqa(reconstructed, dest);
         code.punpcklwd(reconstructed, xmm0);
@@ -5076,9 +5076,8 @@ void EmitX64::EmitVectorSignedSaturatedNeg64(EmitContext& ctx, IR::Inst* inst) {
 #    pragma clang diagnostic ignored "-Wunused-lambda-capture"
 #endif
 template<typename T, typename U = std::make_unsigned_t<T>>
+    requires std::is_signed_v<T>
 static bool VectorSignedSaturatedShiftLeft(VectorArray<T>& dst, const VectorArray<T>& data, const VectorArray<T>& shift_values) {
-    static_assert(std::is_signed_v<T>, "T must be signed.");
-
     bool qc_flag = false;
 
     constexpr size_t bit_size_minus_one = mcl::bitsizeof<T> - 1;
@@ -5134,9 +5133,9 @@ void EmitX64::EmitVectorSignedSaturatedShiftLeft64(EmitContext& ctx, IR::Inst* i
 }
 
 template<typename T>
+    requires std::is_signed_v<T>
 static bool VectorSignedSaturatedShiftLeftUnsigned(VectorArray<T>& dst, const VectorArray<T>& data, u8 shift_amount) {
     using U = std::make_unsigned_t<T>;
-    static_assert(std::is_signed_v<T>, "T must be signed.");
     bool qc_flag = false;
     for (size_t i = 0; i < dst.size(); i++) {
         auto const element = data[i];
@@ -5277,11 +5276,11 @@ void EmitX64::EmitVectorSub64(EmitContext& ctx, IR::Inst* inst) {
 
 void EmitX64::EmitVectorTable(EmitContext&, IR::Inst* inst) {
     // Do nothing. We *want* to hold on to the refcount for our arguments, so VectorTableLookup can use our arguments.
-    ASSERT(inst->UseCount() == 1 && "Table cannot be used multiple times");
+    DEBUG_ASSERT(inst->UseCount() == 1 && "Table cannot be used multiple times");
 }
 
 void EmitX64::EmitVectorTableLookup64(EmitContext& ctx, IR::Inst* inst) {
-    ASSERT(inst->GetArg(1).GetInst()->GetOpcode() == IR::Opcode::VectorTable);
+    DEBUG_ASSERT(inst->GetArg(1).GetInst()->GetOpcode() == IR::Opcode::VectorTable);
 
     auto args = ctx.reg_alloc.GetArgumentInfo(inst);
     auto table = ctx.reg_alloc.GetArgumentInfo(inst->GetArg(1).GetInst());
@@ -5439,7 +5438,7 @@ void EmitX64::EmitVectorTableLookup64(EmitContext& ctx, IR::Inst* inst) {
             code.pxor(xmm0, xmm0);
             code.punpcklqdq(xmm_table1, xmm0);
         } else {
-            ASSERT(table_size == 4);
+            DEBUG_ASSERT(table_size == 4);
             auto const xmm_table1_upper = ctx.reg_alloc.UseXmm(code, table[3]);
             code.punpcklqdq(xmm_table1, xmm_table1_upper);
             ctx.reg_alloc.Release(xmm_table1_upper);
@@ -5530,7 +5529,7 @@ void EmitX64::EmitVectorTableLookup64(EmitContext& ctx, IR::Inst* inst) {
 }
 
 void EmitX64::EmitVectorTableLookup128(EmitContext& ctx, IR::Inst* inst) {
-    ASSERT(inst->GetArg(1).GetInst()->GetOpcode() == IR::Opcode::VectorTable);
+    DEBUG_ASSERT(inst->GetArg(1).GetInst()->GetOpcode() == IR::Opcode::VectorTable);
 
     auto args = ctx.reg_alloc.GetArgumentInfo(inst);
     auto table = ctx.reg_alloc.GetArgumentInfo(inst->GetArg(1).GetInst());
@@ -6030,17 +6029,15 @@ void EmitX64::EmitVectorUnsignedRecipSqrtEstimate(EmitContext& ctx, IR::Inst* in
 // Simple generic case for 8, 16, and 32-bit values. 64-bit values
 // will need to be special-cased as we can't simply use a larger integral size.
 template<typename T, typename U = std::make_unsigned_t<T>>
+    requires std::is_signed_v<T>
 static bool EmitVectorUnsignedSaturatedAccumulateSigned(VectorArray<U>& result, const VectorArray<T>& lhs, const VectorArray<T>& rhs) {
-    static_assert(std::is_signed_v<T>, "T must be signed.");
     static_assert(mcl::bitsizeof<T> < 64, "T must be less than 64 bits in size.");
-
     bool qc_flag = false;
-
     for (size_t i = 0; i < result.size(); i++) {
         // We treat rhs' members as unsigned, so cast to unsigned before signed to inhibit sign-extension.
         // We use the unsigned equivalent of T, as we want zero-extension to occur, rather than a plain move.
         const s64 x = s64{lhs[i]};
-        const s64 y = static_cast<s64>(static_cast<std::make_unsigned_t<U>>(rhs[i]));
+        const s64 y = s64(std::make_unsigned_t<U>(rhs[i]));
         const s64 sum = x + y;
 
         if (sum > (std::numeric_limits<U>::max)()) {
@@ -6050,10 +6047,9 @@ static bool EmitVectorUnsignedSaturatedAccumulateSigned(VectorArray<U>& result, 
             result[i] = (std::numeric_limits<U>::min)();
             qc_flag = true;
         } else {
-            result[i] = static_cast<U>(sum);
+            result[i] = U(sum);
         }
     }
-
     return qc_flag;
 }
 
@@ -6134,29 +6130,23 @@ void EmitX64::EmitVectorUnsignedSaturatedNarrow64(EmitContext& ctx, IR::Inst* in
 }
 
 template<typename T, typename S = std::make_signed_t<T>>
+    requires std::is_unsigned_v<T>
 static bool VectorUnsignedSaturatedShiftLeft(VectorArray<T>& dst, const VectorArray<T>& data, const VectorArray<T>& shift_values) {
-    static_assert(std::is_unsigned_v<T>, "T must be an unsigned type.");
-
     bool qc_flag = false;
-
     constexpr size_t bit_size = mcl::bitsizeof<T>;
-    constexpr S negative_bit_size = -static_cast<S>(bit_size);
-
+    constexpr S negative_bit_size = -S(bit_size);
     for (size_t i = 0; i < dst.size(); i++) {
         const T element = data[i];
-        const S shift = std::clamp(static_cast<S>(mcl::bit::sign_extend<8>(static_cast<T>(shift_values[i] & 0xFF))),
-                                   negative_bit_size, (std::numeric_limits<S>::max)());
-
+        const S shift = std::clamp(S(mcl::bit::sign_extend<8>(T(shift_values[i] & 0xFF))), negative_bit_size, (std::numeric_limits<S>::max)());
         if (element == 0 || shift <= negative_bit_size) {
             dst[i] = 0;
         } else if (shift < 0) {
-            dst[i] = static_cast<T>(element >> -shift);
-        } else if (shift >= static_cast<S>(bit_size)) {
+            dst[i] = T(element >> -shift);
+        } else if (shift >= S(bit_size)) {
             dst[i] = (std::numeric_limits<T>::max)();
             qc_flag = true;
         } else {
             const T shifted = element << shift;
-
             if ((shifted >> shift) != element) {
                 dst[i] = (std::numeric_limits<T>::max)();
                 qc_flag = true;

@@ -16,12 +16,12 @@ struct Jit::Impl final {
     explicit Impl(UserConfig conf_) : conf(std::move(conf_)) {}
 
     HaltReason Run() {
-        UNIMPLEMENTED();
+        ASSERT(false);
         return halt_reason;
     }
 
     HaltReason Step() {
-        UNIMPLEMENTED();
+        ASSERT(false);
         return halt_reason | HaltReason::Step;
     }
 

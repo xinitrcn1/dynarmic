@@ -14,7 +14,7 @@
 #include <type_traits>
 
 #include "dynarmic/common/common_types.h"
-#include "dynarmic/common/x64/xbyak.h"
+#include "common/x64/xbyak.h"
 #include "dynarmic/mcl/bit.hpp"
 #include "dynarmic/backend/x64/xbyak.h"
 #include "dynarmic/backend/x64/abi.h"
@@ -85,8 +85,8 @@ public:
 
     /// @brief Code emitter: Calls the function
     template<typename F>
+        requires std::is_pointer_v<F> && std::is_function_v<std::remove_pointer_t<F>>
     void CallFunction(F fn) {
-        static_assert(std::is_pointer_v<F> && std::is_function_v<std::remove_pointer_t<F>>, "Supplied type must be a pointer to a function");
         ::Common::X64::CallFarFunction(*this, fn);
     }
 

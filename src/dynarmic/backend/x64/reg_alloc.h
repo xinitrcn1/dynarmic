@@ -49,19 +49,19 @@ public:
         return is_being_used_count == 0 && current_references == 1 && size_t(accumulated_uses) + 1 == size_t(total_uses);
     }
     inline void ReadLock() noexcept {
-        ASSERT(size_t(is_being_used_count) + 1 < (std::numeric_limits<decltype(is_being_used_count)>::max)());
-        ASSERT(!bool(is_scratch));
+        DEBUG_ASSERT(size_t(is_being_used_count) + 1 < (std::numeric_limits<decltype(is_being_used_count)>::max)());
+        DEBUG_ASSERT(!bool(is_scratch));
         is_being_used_count++;
     }
     inline void WriteLock() noexcept {
-        ASSERT(is_being_used_count == 0);
+        DEBUG_ASSERT(is_being_used_count == 0);
         is_being_used_count++;
         is_scratch = true;
     }
     inline void AddArgReference() noexcept {
-        ASSERT(size_t(current_references) + 1 < (std::numeric_limits<decltype(current_references)>::max)());
+        DEBUG_ASSERT(size_t(current_references) + 1 < (std::numeric_limits<decltype(current_references)>::max)());
         ++current_references;
-        ASSERT(size_t(accumulated_uses) + current_references <= size_t(total_uses));
+        DEBUG_ASSERT(size_t(accumulated_uses) + current_references <= size_t(total_uses));
     }
     void ReleaseOne() noexcept;
     void ReleaseAll() noexcept;
@@ -132,7 +132,6 @@ private:
 
 //data
     IR::Value value; //8
-    bool allocated = false; //1
 };
 
 class RegAlloc final {
@@ -146,31 +145,25 @@ public:
     inline bool IsValueLive(const IR::Inst* inst) const noexcept {
         return !!ValueLocation(inst);
     }
-    inline Xbyak::Reg64 UseGpr(BlockOfCode& code, Argument& arg) noexcept {
-        ASSERT(!arg.allocated);
-        arg.allocated = true;
+    inline Xbyak::Reg64 UseGpr(BlockOfCode& code, Argument arg) noexcept {
         return HostLocToReg64(UseImpl(code, arg.value, gpr_order));
     }
-    inline Xbyak::Xmm UseXmm(BlockOfCode& code, Argument& arg) noexcept {
-        ASSERT(!arg.allocated);
-        arg.allocated = true;
+    inline Xbyak::Xmm UseXmm(BlockOfCode& code, Argument arg) noexcept {
         return HostLocToXmm(UseImpl(code, arg.value, xmm_order));
     }
-    inline OpArg UseOpArg(BlockOfCode& code, Argument& arg) noexcept {
+    inline OpArg UseOpArg(BlockOfCode& code, Argument arg) noexcept {
         return UseGpr(code, arg);
     }
-    inline void Use(BlockOfCode& code, Argument& arg, const HostLoc host_loc) noexcept {
-        ASSERT(!arg.allocated);
-        arg.allocated = true;
+    inline void Use(BlockOfCode& code, Argument arg, const HostLoc host_loc) noexcept {
         UseImpl(code, arg.value, BuildRegSet({host_loc}));
     }
 
-    Xbyak::Reg64 UseScratchGpr(BlockOfCode& code, Argument& arg) noexcept;
-    Xbyak::Xmm UseScratchXmm(BlockOfCode& code, Argument& arg) noexcept;
-    void UseScratch(BlockOfCode& code, Argument& arg, HostLoc host_loc) noexcept;
+    Xbyak::Reg64 UseScratchGpr(BlockOfCode& code, Argument arg) noexcept;
+    Xbyak::Xmm UseScratchXmm(BlockOfCode& code, Argument arg) noexcept;
+    void UseScratch(BlockOfCode& code, Argument arg, HostLoc host_loc) noexcept;
 
-    void DefineValue(BlockOfCode& code, IR::Inst* inst, const Xbyak::Reg& reg) noexcept;
-    void DefineValue(BlockOfCode& code, IR::Inst* inst, Argument& arg) noexcept;
+    void DefineValue(BlockOfCode& code, IR::Inst* inst, const Xbyak::Reg reg) noexcept;
+    void DefineValue(BlockOfCode& code, IR::Inst* inst, Argument arg) noexcept;
 
     void Release(const Xbyak::Reg& reg) noexcept;
 
@@ -205,7 +198,7 @@ public:
             iter.ReleaseAll();
     }
     inline void AssertNoMoreUses() noexcept {
-        ASSERT(std::all_of(hostloc_info.begin(), hostloc_info.end(), [](const auto& i) noexcept { return i.IsEmpty(); }));
+        DEBUG_ASSERT(std::all_of(hostloc_info.begin(), hostloc_info.end(), [](const auto& i) noexcept { return i.IsEmpty(); }));
     }
 #ifndef NDEBUG
     inline void EmitVerboseDebuggingOutput(BlockOfCode& code) noexcept {

@@ -129,7 +129,7 @@ void EmitX64::EmitIsZero64(EmitContext& ctx, IR::Inst* inst) {
 void EmitX64::EmitTestBit(EmitContext& ctx, IR::Inst* inst) {
     auto args = ctx.reg_alloc.GetArgumentInfo(inst);
     const Xbyak::Reg64 result = ctx.reg_alloc.UseScratchGpr(code, args[0]);
-    ASSERT(args[1].IsImmediate());
+    DEBUG_ASSERT(args[1].IsImmediate());
     // TODO: Flag optimization
     code.bt(result, args[1].GetImmediateU8());
     code.setc(result.cvt8());
@@ -900,7 +900,7 @@ void EmitX64::EmitRotateRightMasked64(EmitContext& ctx, IR::Inst* inst) {
         code, ctx, inst, [&](auto result, auto shift) { code.ror(result, shift); }, nullptr);
 }
 
-static Xbyak::Reg8 DoCarry(BlockOfCode& code, RegAlloc& reg_alloc, Argument& carry_in, IR::Inst* carry_out) {
+static Xbyak::Reg8 DoCarry(BlockOfCode& code, RegAlloc& reg_alloc, Argument carry_in, IR::Inst* carry_out) {
     if (carry_in.IsImmediate()) {
         return carry_out ? reg_alloc.ScratchGpr(code).cvt8() : Xbyak::Reg8{-1};
     } else {

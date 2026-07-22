@@ -541,7 +541,7 @@ void* BlockOfCode::AllocateFromCodeSpace(size_t alloc_size) {
 
     void* ret = getCurr<void*>();
     size_ += alloc_size;
-    memset(ret, 0, alloc_size);
+    std::memset(ret, 0, alloc_size);
     return ret;
 }
 
