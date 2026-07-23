@@ -14,7 +14,7 @@
 #include <type_traits>
 
 #include "dynarmic/common/common_types.h"
-#include "common/x64/xbyak.h"
+#include "dynarmic/common/x64/xbyak.h"
 #include "dynarmic/mcl/bit.hpp"
 #include "dynarmic/backend/x64/xbyak.h"
 #include "dynarmic/backend/x64/abi.h"
