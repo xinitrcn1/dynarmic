@@ -36,9 +36,8 @@ namespace Common::X64 {
 
 constexpr size_t RegToIndex(const Xbyak::Reg& reg) {
     using Kind = Xbyak::Reg::Kind;
-    ASSERT_MSG((reg.getKind() & (Kind::REG | Kind::XMM)) != 0,
-               "RegSet only support GPRs and XMM registers.");
-    ASSERT_MSG(reg.getIdx() < 16, "RegSet only supports XXM0-15.");
+    ASSERT((reg.getKind() & (Kind::REG | Kind::XMM)) != 0 && "RegSet only support GPRs and XMM registers.");
+    ASSERT(reg.getIdx() < 16 && "RegSet only supports XXM0-15.");
     return static_cast<size_t>(reg.getIdx()) + (reg.getKind() == Kind::REG ? 0 : 16);
 }
 

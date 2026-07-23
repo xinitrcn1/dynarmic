@@ -32,21 +32,21 @@ This file is based off of Yuzu and Dynarmic.
 # multiarch builds are a special case and also very difficult
 # this is what I have for now, but it's not ideal
 
-# Do note that situations where multiple architectures are defined
-# should NOT be too dependent on the architecture
-# otherwise, you may end up with duplicate code
-if (CMAKE_OSX_ARCHITECTURES)
-    set(MULTIARCH_BUILD 1)
-    set(ARCHITECTURE "${CMAKE_OSX_ARCHITECTURES}")
+# # Do note that situations where multiple architectures are defined
+# # should NOT be too dependent on the architecture
+# # otherwise, you may end up with duplicate code
+# if (CMAKE_OSX_ARCHITECTURES)
+#     set(MULTIARCH_BUILD 1)
+#     set(ARCHITECTURE "${CMAKE_OSX_ARCHITECTURES}")
 
-    # hope and pray the architecture names match
-    foreach(ARCH IN ${CMAKE_OSX_ARCHITECTURES})
-        set(ARCHITECTURE_${ARCH} 1 PARENT_SCOPE)
-        add_definitions(-DARCHITECTURE_${ARCH}=1)
-    endforeach()
+#     # hope and pray the architecture names match
+#     foreach(ARCH IN ${CMAKE_OSX_ARCHITECTURES})
+#         set(ARCHITECTURE_${ARCH} 1 PARENT_SCOPE)
+#         add_definitions(-DARCHITECTURE_${ARCH}=1)
+#     endforeach()
 
-    return()
-endif()
+#     return()
+# endif()
 
 include(CheckSymbolExists)
 function(detect_architecture symbol arch)
