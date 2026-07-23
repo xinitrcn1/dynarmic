@@ -122,10 +122,6 @@ endif()
 
 # Arch detection
 include(DetectArchitecture)
-if (NOT DEFINED ARCHITECTURE)
-    message(FATAL_ERROR "Unsupported architecture encountered. Ending CMake generation.")
-endif()
-message(STATUS "Target architecture: ${ARCHITECTURE}")
 
 # Forced use of individual bundled libraries for non-REQUIRED library is possible with e.g. cmake -DCMAKE_DISABLE_FIND_PACKAGE_fmt=ON ...
 
