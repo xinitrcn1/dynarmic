@@ -6,6 +6,20 @@
 
 #pragma once
 
+#ifdef DYNARMIC_XBYAK_CUSTOM_CONTAINERS
+
+// The embedder is expected to provide its own Common::X64 ABI helpers
+// (RegToIndex, ABI_RETURN, CallFarFunction, etc.) at this path when it
+// defines this flag -- see backend/x64/xbyak.h for what the flag means.
+// Dynarmic doesn't also define its own copy on this branch: two
+// non-identical definitions of the same Common::X64 symbols in one binary
+// is an ODR violation independent of the container-type question. This is
+// the only filename on the embedder's side dynarmic needs to know; how it's
+// implemented past this one include is the embedder's business.
+#include "common/x64/dynarmic_xbyak_abi.h"
+
+#else
+
 #include <type_traits>
 #include <bitset>
 #include <initializer_list>
@@ -22,15 +36,19 @@
 #endif
 
 // You must ensure this matches with src/common/x64/xbyak.h on root dir
-// #include <ankerl/unordered_dense.h>
-// #include <boost/unordered_map.hpp>
-// #define XBYAK_STD_UNORDERED_SET ankerl::unordered_dense::set
-// #define XBYAK_STD_UNORDERED_MAP ankerl::unordered_dense::map
-// #define XBYAK_STD_UNORDERED_MULTIMAP boost::unordered_multimap
+//
+// Same macros backend/x64/xbyak.h sets, for the same reason: this file's
+// own <xbyak/xbyak.h> parse has to agree with that file's, since block_of_code.h
+// includes both in the same TU and whichever is parsed first decides the
+// layout for both. Identical #define in two places is legal and harmless;
+// having them disagree isn't.
+#include <ankerl/unordered_dense.h>
+#include <boost/unordered_map.hpp>
+#define XBYAK_STD_UNORDERED_SET ankerl::unordered_dense::set
+#define XBYAK_STD_UNORDERED_MAP ankerl::unordered_dense::map
+#define XBYAK_STD_UNORDERED_MULTIMAP boost::unordered_multimap
 #include <xbyak/xbyak.h>
 #include <xbyak/xbyak_util.h>
-
-#include <xbyak/xbyak.h>
 
 namespace Common::X64 {
 
@@ -280,3 +298,5 @@ inline void CallFarFunction(Xbyak::CodeGenerator& code, const T f) {
 }
 
 } // namespace Common::X64
+
+#endif // DYNARMIC_XBYAK_CUSTOM_CONTAINERS
