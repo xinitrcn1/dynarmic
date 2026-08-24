@@ -885,6 +885,10 @@ struct TranslatorVisitor final {
     bool v8_SHA256H(bool D, size_t Vn, size_t Vd, bool N, bool Q, bool M, size_t Vm);
     bool v8_SHA256H2(bool D, size_t Vn, size_t Vd, bool N, bool Q, bool M, size_t Vm);
     bool v8_SHA256SU1(bool D, size_t Vn, size_t Vd, bool N, bool Q, bool M, size_t Vm);
+    bool v8_SHA1C(bool D, size_t Vn, size_t Vd, bool N, bool Q, bool M, size_t Vm);
+    bool v8_SHA1P(bool D, size_t Vn, size_t Vd, bool N, bool Q, bool M, size_t Vm);
+    bool v8_SHA1M(bool D, size_t Vn, size_t Vd, bool N, bool Q, bool M, size_t Vm);
+    bool v8_SHA1SU0(bool D, size_t Vn, size_t Vd, bool N, bool Q, bool M, size_t Vm);
 
     // Advanced SIMD three registers with different lengths
     bool asimd_VADDL(bool U, bool D, size_t sz, size_t Vn, size_t Vd, bool op, bool N, bool M, size_t Vm);
@@ -929,6 +933,8 @@ struct TranslatorVisitor final {
     bool v8_AESIMC(bool D, size_t sz, size_t Vd, bool M, size_t Vm);
     bool v8_AESMC(bool D, size_t sz, size_t Vd, bool M, size_t Vm);
     bool v8_SHA256SU0(bool D, size_t sz, size_t Vd, bool M, size_t Vm);
+    bool v8_SHA1H(bool D, size_t sz, size_t Vd, bool M, size_t Vm);
+    bool v8_SHA1SU1(bool D, size_t sz, size_t Vd, bool M, size_t Vm);
     bool asimd_VCLS(bool D, size_t sz, size_t Vd, bool Q, bool M, size_t Vm);
     bool asimd_VCLZ(bool D, size_t sz, size_t Vd, bool Q, bool M, size_t Vm);
     bool asimd_VCNT(bool D, size_t sz, size_t Vd, bool Q, bool M, size_t Vm);

@@ -256,6 +256,45 @@ bool TranslatorVisitor::v8_SHA256SU0(bool D, size_t sz, size_t Vd, bool M, size_
     return true;
 }
 
+bool TranslatorVisitor::v8_SHA1H(bool D, size_t sz, size_t Vd, bool M, size_t Vm) {
+    if (sz != 0b10 || mcl::bit::get_bit<0>(Vd) || mcl::bit::get_bit<0>(Vm)) {
+        return UndefinedInstruction();
+    }
+
+    const auto d = ToVector(true, Vd, D);
+    const auto m = ToVector(true, Vm, M);
+    const auto data = ir.GetVector(m);
+
+    const auto result = ir.VectorOr(ir.VectorLogicalShiftLeft(32, data, 30),
+                                     ir.VectorLogicalShiftRight(32, data, 2));
+
+    ir.SetVector(d, result);
+    return true;
+}
+
+bool TranslatorVisitor::v8_SHA1SU1(bool D, size_t sz, size_t Vd, bool M, size_t Vm) {
+    if (sz != 0b10 || mcl::bit::get_bit<0>(Vd) || mcl::bit::get_bit<0>(Vm)) {
+        return UndefinedInstruction();
+    }
+
+    const auto d = ToVector(true, Vd, D);
+    const auto m = ToVector(true, Vm, M);
+    const auto d_reg = ir.GetVector(d);
+    const auto n_reg = ir.GetVector(m);
+
+    // Shuffle down the whole vector and zero out the top 32 bits
+    const auto shuffled_n = ir.VectorSetElement(32, ir.VectorRotateWholeVectorRight(n_reg, 32), 3, ir.Imm32(0));
+    const auto t = ir.VectorEor(d_reg, shuffled_n);
+    const auto rotated_t = ir.VectorRotateLeft(32, t, 1);
+
+    const auto low_rotated_t = ir.RotateRight(ir.VectorGetElement(32, rotated_t, 0), ir.Imm8(31));
+    const auto high_t = ir.VectorGetElement(32, rotated_t, 3);
+    const auto result = ir.VectorSetElement(32, rotated_t, 3, ir.Eor(low_rotated_t, high_t));
+
+    ir.SetVector(d, result);
+    return true;
+}
+
 bool TranslatorVisitor::asimd_VCLS(bool D, size_t sz, size_t Vd, bool Q, bool M, size_t Vm) {
     if (sz == 0b11) {
         return UndefinedInstruction();
