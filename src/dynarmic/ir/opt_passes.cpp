@@ -11,7 +11,7 @@
 #include <map>
 #include <bit>
 
-#include <ankerl/unordered_dense.h>
+#include "dynarmic/common/container/unordered_map.h"
 #include "boost/container/small_vector.hpp"
 #include "dynarmic/frontend/A32/a32_ir_emitter.h"
 #include "dynarmic/frontend/A32/a32_location_descriptor.h"
@@ -787,7 +787,7 @@ static void FoldCountLeadingZeros(IR::Inst& inst, bool is_32_bit) {
 /// Folds division operations based on the following:
 ///
 /// 1. x / 0 -> 0 (NOTE: This is an ARM-specific behavior defined in the architecture reference manual)
-/// 2a. 0x8000_0000 / 0xFFFF_FFFF -> 0x8000_0000 (NOTE: More ARM bullshit)
+/// 2a. 0x8000_0000 / 0xFFFF_FFFF -> 0x8000_0000 (NOTE: More ARM errata)
 /// 2b. 0x8000_0000_0000_0000 / 0xFFFF_FFFF_FFFF_FFFF -> 0x8000_0000_0000_0000
 /// 3. imm_x / imm_y -> result
 /// 4. x / 1 -> x
@@ -1433,7 +1433,7 @@ static void VerificationPass(const IR::Block& block) {
             ASSERT(IR::AreTypesCompatible(t1, t2));
         }
     }
-    ankerl::unordered_dense::map<IR::Inst*, size_t> actual_uses;
+    ::Common::unordered_map<IR::Inst*, size_t> actual_uses;
     for (auto const& inst : block.instructions) {
         for (size_t i = 0; i < inst.NumArgs(); i++)
             if (IR::Value const arg = inst.GetArg(i); !arg.IsImmediate())

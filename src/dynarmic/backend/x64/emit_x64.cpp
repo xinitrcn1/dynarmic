@@ -14,7 +14,8 @@
 #include <boost/variant/detail/apply_visitor_binary.hpp>
 #include "dynarmic/mcl/bit.hpp"
 #include "dynarmic/common/common_types.h"
-#include <ankerl/unordered_dense.h>
+#include "dynarmic/common/container/unordered_map.h"
+#include "dynarmic/common/container/unordered_set.h"
 
 #include "dynarmic/backend/x64/block_of_code.h"
 #include "dynarmic/backend/x64/nzcv_util.h"
@@ -147,7 +148,7 @@ void EmitX64::EmitVerboseDebuggingOutput(RegAlloc& reg_alloc) {
 
 void EmitX64::EmitPushRSB(EmitContext& ctx, IR::Inst* inst) {
     auto args = ctx.reg_alloc.GetArgumentInfo(inst);
-    DEBUG_ASSERT(args[0].IsImmediate());
+    ASSERT(args[0].IsImmediate());
     const u64 unique_hash_of_target = args[0].GetImmediateU64();
 
     ctx.reg_alloc.ScratchGpr(code, HostLoc::RCX);
@@ -287,7 +288,7 @@ void EmitX64::EmitNZCVFromPackedFlags(EmitContext& ctx, IR::Inst* inst) {
 }
 
 void EmitX64::EmitAddCycles(size_t cycles) {
-    DEBUG_ASSERT(cycles < (std::numeric_limits<s32>::max)());
+    ASSERT(cycles < (std::numeric_limits<s32>::max)());
     code.sub(qword[rsp + ABI_SHADOW_SPACE + offsetof(StackLayout, cycles_remaining)], static_cast<u32>(cycles));
 }
 
@@ -396,7 +397,7 @@ void EmitX64::ClearCache() {
     PerfMapClear();
 }
 
-void EmitX64::InvalidateBasicBlocks(const ankerl::unordered_dense::set<IR::LocationDescriptor>& locations) {
+void EmitX64::InvalidateBasicBlocks(const ::Common::unordered_set<IR::LocationDescriptor>& locations) {
     code.EnableWriting();
     for (const auto& descriptor : locations) {
         if (auto const it = block_descriptors.find(descriptor); it != block_descriptors.end()) {

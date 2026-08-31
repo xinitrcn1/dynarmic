@@ -36,16 +36,11 @@
 #endif
 
 // You must ensure this matches with src/common/x64/xbyak.h on root dir
-//
-// Same macros backend/x64/xbyak.h sets, for the same reason: this file's
-// own <xbyak/xbyak.h> parse has to agree with that file's, since block_of_code.h
-// includes both in the same TU and whichever is parsed first decides the
-// layout for both. Identical #define in two places is legal and harmless;
-// having them disagree isn't.
-#include <ankerl/unordered_dense.h>
+#include "dynarmic/common/container/unordered_map.h"
+#include "dynarmic/common/container/unordered_set.h"
 #include <boost/unordered_map.hpp>
-#define XBYAK_STD_UNORDERED_SET ankerl::unordered_dense::set
-#define XBYAK_STD_UNORDERED_MAP ankerl::unordered_dense::map
+#define XBYAK_STD_UNORDERED_SET ::Common::unordered_set
+#define XBYAK_STD_UNORDERED_MAP ::Common::unordered_map
 #define XBYAK_STD_UNORDERED_MULTIMAP boost::unordered_multimap
 #include <xbyak/xbyak.h>
 #include <xbyak/xbyak_util.h>

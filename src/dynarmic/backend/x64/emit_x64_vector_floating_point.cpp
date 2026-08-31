@@ -676,7 +676,7 @@ void EmitX64::EmitFPVectorFromSignedFixed32(EmitContext& ctx, IR::Inst* inst) {
     const int fbits = args[1].GetImmediateU8();
     const FP::RoundingMode rounding_mode = static_cast<FP::RoundingMode>(args[2].GetImmediateU8());
     const bool fpcr_controlled = args[3].GetImmediateU1();
-    DEBUG_ASSERT(rounding_mode == ctx.FPCR(fpcr_controlled).RMode());
+    ASSERT(rounding_mode == ctx.FPCR(fpcr_controlled).RMode());
 
     MaybeStandardFPSCRValue(code, ctx, fpcr_controlled, [&] {
         code.cvtdq2ps(xmm, xmm);
@@ -694,7 +694,7 @@ void EmitX64::EmitFPVectorFromSignedFixed64(EmitContext& ctx, IR::Inst* inst) {
     const int fbits = args[1].GetImmediateU8();
     const FP::RoundingMode rounding_mode = static_cast<FP::RoundingMode>(args[2].GetImmediateU8());
     const bool fpcr_controlled = args[3].GetImmediateU1();
-    DEBUG_ASSERT(rounding_mode == ctx.FPCR(fpcr_controlled).RMode());
+    ASSERT(rounding_mode == ctx.FPCR(fpcr_controlled).RMode());
 
     MaybeStandardFPSCRValue(code, ctx, fpcr_controlled, [&] {
         if (code.HasHostFeature(HostFeature::AVX512_OrthoFloat)) {
@@ -745,7 +745,7 @@ void EmitX64::EmitFPVectorFromUnsignedFixed32(EmitContext& ctx, IR::Inst* inst) 
     const int fbits = args[1].GetImmediateU8();
     const FP::RoundingMode rounding_mode = static_cast<FP::RoundingMode>(args[2].GetImmediateU8());
     const bool fpcr_controlled = args[3].GetImmediateU1();
-    DEBUG_ASSERT(rounding_mode == ctx.FPCR(fpcr_controlled).RMode());
+    ASSERT(rounding_mode == ctx.FPCR(fpcr_controlled).RMode());
 
     MaybeStandardFPSCRValue(code, ctx, fpcr_controlled, [&] {
         if (code.HasHostFeature(HostFeature::AVX512_Ortho)) {
@@ -795,7 +795,7 @@ void EmitX64::EmitFPVectorFromUnsignedFixed64(EmitContext& ctx, IR::Inst* inst) 
     const int fbits = args[1].GetImmediateU8();
     const FP::RoundingMode rounding_mode = static_cast<FP::RoundingMode>(args[2].GetImmediateU8());
     const bool fpcr_controlled = args[3].GetImmediateU1();
-    DEBUG_ASSERT(rounding_mode == ctx.FPCR(fpcr_controlled).RMode());
+    ASSERT(rounding_mode == ctx.FPCR(fpcr_controlled).RMode());
 
     MaybeStandardFPSCRValue(code, ctx, fpcr_controlled, [&] {
         if (code.HasHostFeature(HostFeature::AVX512_OrthoFloat)) {
@@ -2160,8 +2160,6 @@ void EmitFPVectorToFixed(BlockOfCode& code, EmitContext& ctx, IR::Inst* inst) {
     ROUNDING_MODE_CASE(CASE, 0x3e) \
     ROUNDING_MODE_CASE(CASE, 0x3f)
 
-        // FUCK YOU MSVC, FUCKING DEPTH CANT EVEN HANDLE 8+16+32+64 DEPTH OF A ELSE STATMENT YOU FUCKING STUPID
-        // BURN MSVC BURN IT STUPID COMPILER CAN'T EVEN COMPILE THE MOST BASIC C++
         ROUNDING_MODE_SWITCH(ToNearest_TieEven)
         ROUNDING_MODE_SWITCH(TowardsPlusInfinity)
         ROUNDING_MODE_SWITCH(TowardsMinusInfinity)

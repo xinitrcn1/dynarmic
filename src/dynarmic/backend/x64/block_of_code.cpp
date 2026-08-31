@@ -61,73 +61,6 @@ namespace {
 constexpr size_t CONSTANT_POOL_SIZE = 2 * 1024 * 1024;
 constexpr size_t PRELUDE_COMMIT_SIZE = 16 * 1024 * 1024;
 
-class CustomXbyakAllocator : public Xbyak::Allocator {
-public:
-#ifdef _WIN32
-    uint8_t* alloc(size_t size) override {
-        void* p = VirtualAlloc(nullptr, size, MEM_RESERVE, PAGE_READWRITE);
-        if (p == nullptr) {
-            using Xbyak::Error;
-            XBYAK_THROW(Xbyak::ERR_CANT_ALLOC);
-        }
-        return static_cast<uint8_t*>(p);
-    }
-
-    void free(uint8_t* p) override {
-        VirtualFree(static_cast<void*>(p), 0, MEM_RELEASE);
-    }
-
-    bool useProtect() const override { return false; }
-#else
-    static constexpr size_t DYNARMIC_PAGE_SIZE = 4096;
-
-    // Can't subclass Xbyak::MmapAllocator because it is not a pure interface
-    // and doesn't expose its construtor
-    uint8_t* alloc(size_t size) override {
-        // Waste a page to store the size
-        size += DYNARMIC_PAGE_SIZE;
-
-        int mode = MAP_PRIVATE;
-#if defined(MAP_ANONYMOUS)
-        mode |= MAP_ANONYMOUS;
-#elif defined(MAP_ANON)
-        mode |= MAP_ANON;
-#else
-#   error "not supported"
-#endif
-#ifdef MAP_JIT
-        mode |= MAP_JIT;
-#endif
-        int prot = PROT_READ | PROT_WRITE;
-#ifdef PROT_MPROTECT
-        // https://man.netbsd.org/mprotect.2 specifies that an mprotect() that is LESS
-        // restrictive than the original mapping MUST fail
-        prot |= PROT_MPROTECT(PROT_READ) | PROT_MPROTECT(PROT_WRITE) | PROT_MPROTECT(PROT_EXEC);
-#endif
-        void* p = mmap(nullptr, size, prot, mode, -1, 0);
-        if (p == MAP_FAILED) {
-            using Xbyak::Error;
-            XBYAK_THROW(Xbyak::ERR_CANT_ALLOC);
-        }
-        std::memcpy(p, &size, sizeof(size_t));
-        return static_cast<uint8_t*>(p) + DYNARMIC_PAGE_SIZE;
-    }
-
-    void free(uint8_t* p) override {
-        size_t size;
-        std::memcpy(&size, p - DYNARMIC_PAGE_SIZE, sizeof(size_t));
-        munmap(p - DYNARMIC_PAGE_SIZE, size);
-    }
-
-#    ifdef DYNARMIC_ENABLE_NO_EXECUTE_SUPPORT
-    bool useProtect() const override { return false; }
-#    endif
-#endif
-};
-
-// This is threadsafe as Xbyak::Allocator does not contain any state; it is a pure interface.
-CustomXbyakAllocator s_allocator;
-
 #ifdef DYNARMIC_ENABLE_NO_EXECUTE_SUPPORT
 void ProtectMemory(const void* base, size_t size, bool is_executable) {
 #    ifdef _WIN32
@@ -143,13 +76,11 @@ void ProtectMemory(const void* base, size_t size, bool is_executable) {
 }
 #endif
 
-HostFeature GetHostFeatures() {
+static auto const cpu_features = []() {
     HostFeature features = {};
-
 #ifdef DYNARMIC_ENABLE_CPU_FEATURE_DETECTION
     using Cpu = Xbyak::util::Cpu;
-    Xbyak::util::Cpu cpu_info;
-
+    Xbyak::util::Cpu cpu_info{};
     if (cpu_info.has(Cpu::tSSSE3))
         features |= HostFeature::SSSE3;
     if (cpu_info.has(Cpu::tSSE41))
@@ -196,7 +127,6 @@ HostFeature GetHostFeatures() {
         features |= HostFeature::GFNI;
     if (cpu_info.has(Cpu::tWAITPKG))
         features |= HostFeature::WAITPKG;
-
     if (cpu_info.has(Cpu::tBMI2)) {
         // BMI2 instructions such as pdep and pext have been very slow up until Zen 3.
         // Check for Zen 3 or newer by its family (0x19).
@@ -214,8 +144,10 @@ HostFeature GetHostFeatures() {
         }
     }
 #endif
-
     return features;
+}();
+HostFeature GetHostFeatures() {
+    return cpu_features;
 }
 
 #ifdef __APPLE__
@@ -233,21 +165,25 @@ bool IsUnderRosetta() {
 
 }  // anonymous namespace
 
-#ifdef DYNARMIC_ENABLE_NO_EXECUTE_SUPPORT
-static const auto default_cg_mode = Xbyak::DontSetProtectRWE;
-#else
-static const auto default_cg_mode = nullptr; //Allow RWE
-#endif
-
 BlockOfCode::BlockOfCode(RunCodeCallbacks cb, JitStateInfo jsi, size_t total_code_size, std::function<void(BlockOfCode&)> rcp)
-        : Xbyak::CodeGenerator(total_code_size, default_cg_mode, &s_allocator)
-        , cb(std::move(cb))
-        , jsi(jsi)
-        , constant_pool(*this, CONSTANT_POOL_SIZE)
-        , host_features(GetHostFeatures()) {
+    : Xbyak::CodeGenerator(total_code_size
+#ifdef DYNARMIC_ENABLE_NO_EXECUTE_SUPPORT
+        , Xbyak::DontSetProtectRWE
+#else
+        , nullptr //Allow RWE
+#endif
+        , nullptr)
+    , constant_pool(*this, CONSTANT_POOL_SIZE)
+    , jsi(jsi)
+    , cb(std::move(cb))
+{
     EnableWriting();
     EnsureMemoryCommitted(PRELUDE_COMMIT_SIZE);
     GenRunCode(rcp);
+}
+
+bool BlockOfCode::HasHostFeature(HostFeature feature) const noexcept {
+    return (GetHostFeatures() & feature) == feature;
 }
 
 void BlockOfCode::PreludeComplete() {
@@ -341,7 +277,7 @@ void BlockOfCode::GenRunCode(std::function<void(BlockOfCode&)> rcp) {
     mov(rbx, ABI_PARAM2); // save temporarily in non-volatile register
 
     if (cb.enable_cycle_counting) {
-        cb.GetTicksRemaining->EmitCall(*this);
+        cb.GetTicksRemaining.EmitCall(*this);
         mov(qword[rsp + ABI_SHADOW_SPACE + offsetof(StackLayout, cycles_to_run)], ABI_RETURN);
         mov(qword[rsp + ABI_SHADOW_SPACE + offsetof(StackLayout, cycles_remaining)], ABI_RETURN);
     }
@@ -388,7 +324,7 @@ void BlockOfCode::GenRunCode(std::function<void(BlockOfCode&)> rcp) {
         cmp(qword[rsp + ABI_SHADOW_SPACE + offsetof(StackLayout, cycles_remaining)], 0);
         jng(return_to_caller);
     }
-    cb.LookupBlock->EmitCall(*this);
+    cb.LookupBlock.EmitCall(*this);
     jmp(ABI_RETURN);
 
     align();
@@ -401,7 +337,7 @@ void BlockOfCode::GenRunCode(std::function<void(BlockOfCode&)> rcp) {
         jng(return_to_caller_mxcsr_already_exited);
     }
     SwitchMxcsrOnEntry();
-    cb.LookupBlock->EmitCall(*this);
+    cb.LookupBlock.EmitCall(*this);
     jmp(ABI_RETURN);
 
     align();
@@ -415,7 +351,7 @@ void BlockOfCode::GenRunCode(std::function<void(BlockOfCode&)> rcp) {
     L(return_to_caller_mxcsr_already_exited);
 
     if (cb.enable_cycle_counting) {
-        cb.AddTicks->EmitCall(*this, [this](RegList param) {
+        cb.AddTicks.EmitCall(*this, [this](RegList param) {
             mov(param[0], qword[rsp + ABI_SHADOW_SPACE + offsetof(StackLayout, cycles_to_run)]);
             sub(param[0], qword[rsp + ABI_SHADOW_SPACE + offsetof(StackLayout, cycles_remaining)]);
         });
@@ -455,18 +391,18 @@ void BlockOfCode::UpdateTicks() {
         return;
     }
 
-    cb.AddTicks->EmitCall(*this, [this](RegList param) {
+    cb.AddTicks.EmitCall(*this, [this](RegList param) {
         mov(param[0], qword[rsp + ABI_SHADOW_SPACE + offsetof(StackLayout, cycles_to_run)]);
         sub(param[0], qword[rsp + ABI_SHADOW_SPACE + offsetof(StackLayout, cycles_remaining)]);
     });
 
-    cb.GetTicksRemaining->EmitCall(*this);
+    cb.GetTicksRemaining.EmitCall(*this);
     mov(qword[rsp + ABI_SHADOW_SPACE + offsetof(StackLayout, cycles_to_run)], ABI_RETURN);
     mov(qword[rsp + ABI_SHADOW_SPACE + offsetof(StackLayout, cycles_remaining)], ABI_RETURN);
 }
 
 void BlockOfCode::LookupBlock() {
-    cb.LookupBlock->EmitCall(*this);
+    cb.LookupBlock.EmitCall(*this);
 }
 
 void BlockOfCode::LoadRequiredFlagsForCondFromRax(IR::Cond cond) {
@@ -520,7 +456,7 @@ void BlockOfCode::LoadRequiredFlagsForCondFromRax(IR::Cond cond) {
 }
 
 Xbyak::Address BlockOfCode::Const(const Xbyak::AddressFrame& frame, u64 lower, u64 upper) {
-    return constant_pool.GetConstant(frame, lower, upper);
+    return constant_pool.GetConstant(*this, frame, lower, upper);
 }
 
 CodePtr BlockOfCode::GetCodeBegin() const {
@@ -541,7 +477,7 @@ void* BlockOfCode::AllocateFromCodeSpace(size_t alloc_size) {
 
     void* ret = getCurr<void*>();
     size_ += alloc_size;
-    std::memset(ret, 0, alloc_size);
+    memset(ret, 0, alloc_size);
     return ret;
 }
 

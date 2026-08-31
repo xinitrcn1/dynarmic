@@ -208,7 +208,7 @@ void A64EmitX64::GenTerminalHandlers() {
     calculate_location_descriptor();
     code.mov(eax, dword[code.ABI_JIT_PTR + offsetof(A64JitState, rsb_ptr)]);
     code.sub(eax, 1);
-    code.and_(eax, u32(A64JitState::RSBPtrMask));
+    code.and_(eax, u32(A64JitState::RSB_PTR_MASK));
     code.mov(dword[code.ABI_JIT_PTR + offsetof(A64JitState, rsb_ptr)], eax);
     code.cmp(rbx, qword[code.ABI_JIT_PTR + offsetof(A64JitState, rsb_location_descriptors) + rax * sizeof(u64)]);
     if (conf.HasOptimization(OptimizationFlag::FastDispatch)) {
@@ -657,7 +657,7 @@ bool EmitTerminalImpl(A64EmitX64& e, IR::Term::LinkBlock terminal, IR::LocationD
 bool EmitTerminalImpl(A64EmitX64& e, IR::Term::LinkBlockFast terminal, IR::LocationDescriptor, bool is_single_step) {
     if (e.conf.HasOptimization(OptimizationFlag::BlockLinking) && !is_single_step) {
         e.patch_information[terminal.next].jmp.push_back(e.code.getCurr());
-        if (auto const next_bb = e.GetBasicBlock(terminal.next)) {
+        if (auto next_bb = e.GetBasicBlock(terminal.next)) {
             e.EmitPatchJmp(terminal.next, next_bb->entrypoint);
         } else {
             e.EmitPatchJmp(terminal.next);
